@@ -20,11 +20,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 def printLegal():
+	print()
 	print('blk_parser  Copyright (C) 2018  DESPAIGNE Pierre-Louis')
 	print()
-    print('This program comes with ABSOLUTELY NO WARRANTY.')
-    print('This is free software, and you are welcome to redistribute it under certain conditions.')
-    print('For details read the LICENSE.txt file or visit <http://www.gnu.org/licenses/>')
+	print('This program comes with ABSOLUTELY NO WARRANTY.')
+	print('This is free software, and you are welcome to redistribute it under certain conditions.')
+	print('For details read the LICENSE.txt file or visit <http://www.gnu.org/licenses/>')
+	print()
 
 def intToHexString(val, invert=True, swap=True):
 	temp_hex = list(str(hex(val)))
