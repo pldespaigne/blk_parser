@@ -11,7 +11,7 @@ These instructions will get you a copy of the project up and running on your loc
 You need Python 3 on your system
 
 ```
-sudo apt-get install python3.X
+> sudo apt-get install python3.X
 ```
 
 ### Installing
@@ -19,7 +19,7 @@ sudo apt-get install python3.X
 Download or clone this repo
 
 ```
-git clone https://github.com/PilouInfo/blk_parser.git
+> git clone https://github.com/PilouInfo/blk_parser.git
 ```
 
 ## Using Blk Parser
@@ -27,8 +27,8 @@ git clone https://github.com/PilouInfo/blk_parser.git
 With a terminal go to the 'script' folder and run the blk_parser.py script
 
 ```
-cd script
-python blk_parser.py
+> cd script
+> python blk_parser.py
 ```
 
 ## Author
