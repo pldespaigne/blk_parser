@@ -1,0 +1,10 @@
+cdc/
+experiment/
+paper/
+
+script/__pycache__/
+
+*.pyc
+*.url
+*.dat
+*.json

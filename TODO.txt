@@ -1,0 +1,7 @@
+TODO : 
+	- move the buildIndexFromFile into index class
+	- create fast parsing (only tx data)
+	- parse tx addresses from tx script
+	- write a README file
+
+DONE : 
