@@ -1,3 +1,5 @@
 TODO : 
 	- create fast parsing (only tx data)
 	- parse tx addresses from tx script
+	- correct hash
+	- add tx hash and block hash

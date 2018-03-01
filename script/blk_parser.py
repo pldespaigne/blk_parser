@@ -23,67 +23,46 @@ import sys
 import os
 import time
 
-import Util
+import Cli
 
-from Block import Block
 from BlockIndex import BlockIndex
 
-def readAllBlockFile(path, pauseAtEach=True, printBlock=True):
-	print('DEPRECATED FUNCTION : index blocks and parse blocks from index instead !')
+Cli.printLegal()
 
-	if(not pauseAtEach): # save starting time for benchmark
-		time_start = time.time()
-		# print('start', time_start)
+running = True
+block_index = None
+block = None
 
-	with open(path, 'rb') as block_file: # open file in read binary mode
-		
-		stat = os.stat(path) # getting the total size of the file
-		file_size = stat.st_size
+while running:
+	command = input('blk_parser > ')
+	command = command.split(' ')
+	if len(command) == 1:
+		if command[0] == 'quit':
+			running = False
+		elif command[0] == 'help':
+			Cli.printHelp()
+		else:
+			Cli.unknownCommand(command)
 
-		# setting counters to 0
-		read_size = 0 # bytes already read
-		start = 0 # starting byte of a blok
-		total_size = 0 # total size of a block
-		block_num = 0 # number of current block
+	elif len(command) == 2:
+		if command[0] == 'index':
+			# block_index = BlockIndex('../data/blk00000.dat')
+			block_index = BlockIndex(command[1])
 
-		while read_size < file_size: # loop through the file
-			start += total_size
-			block_file.seek(start + 4) # seek directly the size field of the block
-
-			bytes_size = block_file.read(4) # get the size of block in binary
-			size = int.from_bytes(bytes_size, byteorder='little') # convert the binary size to int
-
-			total_size = size + 8 # total size of block = read size + 4 byte (magic number) + 4 byte (size)
-			
-			block_file.seek(start) # go back to the begining of the block
-
-			# magic happens here !!!
-			block_bytes_array = block_file.read(total_size) # save the binary data of the block
-			block = Block(block_bytes_array, block_num) # parse this data into Block object
-
-			if(printBlock) : block.print() # print the Block object
-
-			if(pauseAtEach) : input("Press Enter to continue...") # pause before next iteration of loop
-
-			block_num += 1 # increment for the next iteration of loop
-			read_size += total_size
-
-		# end of the reading looop
-	block_file.closed # close the file
-
-	if(not pauseAtEach): # save ending time for benchmark and print the result
-		time_end = time.time()
-		# print('end', time_end)
-		print('reading', block_num-1, 'block(s) =', read_size,'byte(s) in', time_end - time_start, 'second(s)')
-
-
-# main
-# readAllBlockFile('..\data\\blk00000.dat', False, False)
-
-Util.printLegal()
-
-block_index = BlockIndex('..\data\\blk00000.dat')
-# block_index.print()
-
-block666 = block_index.parseBlock(666)
-block666.print()
+			# block42 = block_index.parseBlock(42)
+			# block42.print()
+		else:
+			Cli.unknownCommand(command)
+	elif len(command) == 3:
+		if command[0] == 'show':
+			if command[1] == 'block':
+				i = int(command[2])
+				block = block_index.parseBlock(i)
+				block.print()
+			else:
+				Cli.unknownCommand(command)
+		else:
+			Cli.unknownCommand(command)
+	else:
+		Cli.unknownCommand(command)
+	
