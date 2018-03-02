@@ -19,6 +19,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import hashlib
+
 import Util
 
 class TxOutput:
@@ -62,23 +64,30 @@ class TxOutput:
 			# script = int.from_bytes(bytes_script, byteorder='big')
 			script = Util.intToHexString(int.from_bytes(bytes_script, byteorder='big'), False, False)
 
-			self.list.append(Output(i, value, script_length, script))
+			address_hex = Util.getDataFromHexStringScript(script)
+
+			#decode data (pub key -> address)
+
+
+			self.list.append(Output(i, value, script_length, script, address_hex))
 
 	def print(self):
 		for out in self.list:
 			out.print()
 
 class Output:
-	def __init__(self, _output_index, _value, _script_length, _script):
+	def __init__(self, _output_index, _value, _script_length, _script, _address):
 		self.output_index = _output_index
 		self.value = _value
 		self.script_length = _script_length
 		self.script = _script
+		self.address = _address
 
 	def print(self):
 		padding = '          '
 		print(padding, '|', self.output_index)
 		print(padding, 'valeur', self.value, 'satoshi(s)')
 		print(padding, 'taille du script', self.script_length, 'octet(s)')
-		# print(padding, 'script', self.script)
+		# print(padding, 'script', self.script) # hex string
 		print(padding, 'script', Util.printHexScript(self.script))
+		print(padding, 'address', self.address)

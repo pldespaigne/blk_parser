@@ -22,6 +22,7 @@
 import sys
 import os
 import time
+import hashlib
 
 import Cli
 
@@ -41,6 +42,37 @@ while running:
 			running = False
 		elif command[0] == 'help':
 			Cli.printHelp()
+		#############################################################
+		elif command[0] == 'h':
+			address_hex = '0450863AD64A87AE8A2FE83C1AF1A8403CB53F53E486D8511DAD8A04887E5B23522CD470243453A299FA9E77237716103ABC11A1DF38855ED6F2EE187E9C582BA6'
+			#PUBLIC KEY TO BITCOIN ADDRESS
+			h_sha256 = hashlib.sha256()
+			h_ripemd160 = hashlib.new('ripemd160')
+
+			address_bytes = bytearray.fromhex(address_hex)
+			
+			h_sha256.update(address_bytes)
+			hash_bytes = h_sha256.digest()
+			print(h_sha256.hexdigest())
+			
+			h_ripemd160.update(hash_bytes)
+			hex_str = h_ripemd160.hexdigest()
+			print(hex_str)
+
+			hex_str = '00' + hex_str
+			extend_bytes = bytearray.fromhex(hex_str)
+			print(hex_str)
+
+			h_sha256.update(extend_bytes)
+			hash_bytes = h_sha256.digest()
+			print(h_sha256.digest())
+			print(h_sha256.hexdigest()) # TODO HERE !!!!
+			print()
+
+			h_sha256.update(hash_bytes)
+			hash_bytes = h_sha256.digest()
+			print(hash_bytes)
+		#############################################################
 		else:
 			Cli.unknownCommand(command)
 

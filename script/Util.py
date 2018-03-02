@@ -19,6 +19,25 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+def base58Encode(num): # TOTO NO_RELEASE UNUSED
+	alphabet = '123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ'
+	encode = ''
+	base_count = len(alphabet)
+	while (num >= base_count):
+		tmp = num / base_count
+		mod = num - base_count * tmp
+		encode = self.alphabet[mod] + encode
+		num = tmp
+
+	if (num):
+		encode = self.alphabet[tmp] + encode
+
+	return encode
+
+# def decode(self, s):
+	#""" Decodes the base58-encoded string s into an integer """
+	# return -1
+
 def intToHexString(val, invert=True, swap=True):
 	temp_hex = list(str(hex(val)))
 	temp_hex = temp_hex[2:]#delete the '0x' at the begining
@@ -33,6 +52,56 @@ def intToHexString(val, invert=True, swap=True):
 			i += 2
 	res = ''.join(temp_hex)
 	return '0x'+res
+
+def getDataFromHexStringScript(script):
+	res = ''
+	i = 2
+	while i < len(script) - 1:
+		a = script[i]
+		b = script[i+1]
+
+		if(a == '0' or a == '1' or a == '2' or a == '3'):
+			i+=2
+			strHex = '0x' + a + b
+			intValue = int(strHex, 16)
+			# res += ' PUSHDATA('+str(intValue)+') '
+			j = 0
+			while j < intValue * 2:
+				res += script[i+j]
+				j += 1
+			i += j - 2
+		elif(a + b == '40' or a + b == '41' or a + b == '42' or a + b == '43'):
+			i+=2
+			strHex = '0x' + a + b
+			intValue = int(strHex, 16)
+			# res += ' PUSHDATA('+str(intValue)+') '
+			j = 0
+			while j < intValue * 2:
+				res += script[i+j]
+				j += 1
+			i += j - 2
+		elif(a + b == '44' or a + b == '45' or a + b == '46' or a + b == '47'):
+			i+=2
+			strHex = '0x' + a + b
+			intValue = int(strHex, 16)
+			# res += ' PUSHDATA('+str(intValue)+') '
+			j = 0
+			while j < intValue * 2:
+				res += script[i+j]
+				j += 1
+			i += j - 2
+		elif(a + b == '48' or a + b == '49' or a + b == '4a' or a + b == '4b'):
+			i+=2
+			strHex = '0x' + a + b
+			intValue = int(strHex, 16)
+			# res += ' PUSHDATA('+str(intValue)+') '
+			j = 0
+			while j < intValue * 2:
+				res += script[i+j]
+				j += 1
+			i += j - 2
+		i += 2
+	return res
 
 def printHexScript(script):
 	res = ''

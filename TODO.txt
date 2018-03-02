@@ -1,5 +1,8 @@
 TODO : 
 	- create fast parsing (only tx data)
-	- parse tx addresses from tx script
+	- parse tx addresses from tx script <- WIP
 	- correct hash
 	- add tx hash and block hash
+
+
+pySpark
