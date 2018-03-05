@@ -65,8 +65,12 @@ class TxOutput:
 			script = Util.intToHexString(int.from_bytes(bytes_script, byteorder='big'), False, False)
 
 			address_hex = Util.getDataFromHexStringScript(script)
-
-			#decode data (pub key -> address)
+			if(len(address_hex) == 130):
+				address_hex = Util.pubKStringToAddress(address_hex)
+			elif(len(address_hex) == 40):
+				address_hex = Util.base58Check(address_hex)
+			else:
+				address_hex = 'UNABLE TO PARSE ADDRESS'
 
 
 			self.list.append(Output(i, value, script_length, script, address_hex))

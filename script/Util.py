@@ -19,24 +19,53 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-def base58Encode(num): # TOTO NO_RELEASE UNUSED
-	alphabet = '123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ'
+import hashlib
+
+def pubKStringToAddress(pub_k):
+	address_bytes = bytearray.fromhex(pub_k)
+
+	h_sha256 = hashlib.sha256()
+	h_sha256.update(address_bytes)
+	hash_bytes = h_sha256.digest()
+	
+	h_ripemd160 = hashlib.new('ripemd160')
+	h_ripemd160.update(hash_bytes)
+	hash_bytes = h_ripemd160.digest()
+
+	return base58Check(hash_bytes.hex())
+
+def base58Check(hash160):
+	hash_bytes = bytearray.fromhex(hash160)
+	extend_bytes = b''.join([b'\x00',hash_bytes])
+
+	h_sha256 = hashlib.sha256()
+	h_sha256.update(extend_bytes)
+	hash_bytes = h_sha256.digest()
+
+	h_sha256 = hashlib.sha256()
+	h_sha256.update(hash_bytes)
+	hash_bytes = h_sha256.digest()
+
+	first4 = hash_bytes[:4]
+
+	checksum = b''.join([extend_bytes, first4])
+
+	bigint = int.from_bytes(checksum, byteorder='big')
+	base58 = base58Encode(bigint)
+	return '1'+base58
+
+
+def base58Encode(num):
+	alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 	encode = ''
-	base_count = len(alphabet)
-	while (num >= base_count):
-		tmp = num / base_count
-		mod = num - base_count * tmp
-		encode = self.alphabet[mod] + encode
+	while (num >= 58):
+		tmp = num // 58
+		mod = num % 58
+		encode = alphabet[mod] + encode
 		num = tmp
-
 	if (num):
-		encode = self.alphabet[tmp] + encode
-
+		encode = alphabet[tmp] + encode
 	return encode
-
-# def decode(self, s):
-	#""" Decodes the base58-encoded string s into an integer """
-	# return -1
 
 def intToHexString(val, invert=True, swap=True):
 	temp_hex = list(str(hex(val)))
