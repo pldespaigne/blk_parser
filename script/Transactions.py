@@ -19,6 +19,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import hashlib
+
+import Util
+
 from TxInput import TxInput
 from TxOutput import TxOutput
 
@@ -75,13 +79,21 @@ class Transactions:
 			bytes_lock_time = bytes_rest[:4]
 			bytes_rest = bytes_rest[4:]
 
+			h_sha256 = hashlib.sha256()
+			h_sha256.update(bytes_tx_data)
+			h_bytes = h_sha256.digest()
+			h_sha256 = hashlib.sha256()
+			h_sha256.update(h_bytes)
+			tx_hash = h_sha256.hexdigest()
+			tx_hash = Util.formatHashString(tx_hash, True, True)
+
 			version = int.from_bytes(bytes_out_count, byteorder='little')
 			#in_count
 			#tx_input
 			#out_count
 			#tx_output
 			lock_time = int.from_bytes(bytes_lock_time, byteorder='little')
-			self.transactions.append(Transaction(i, version, in_count, tx_input, out_count, tx_output, lock_time))
+			self.transactions.append(Transaction(i, tx_hash, version, in_count, tx_input, out_count, tx_output, lock_time))
 
 
 
@@ -91,8 +103,9 @@ class Transactions:
 			tx.print()
 
 class Transaction:
-	def __init__(self, _tx_index_in_block, _version, _in_count, _tx_input, _out_count, _tx_output, _lock_time):
+	def __init__(self, _tx_index_in_block, _tx_hash, _version, _in_count, _tx_input, _out_count, _tx_output, _lock_time):
 		self.tx_index_in_block = _tx_index_in_block
+		self.tx_hash = _tx_hash
 		self.version = _version
 		self.in_count = _in_count
 		self.tx_input = _tx_input
@@ -104,6 +117,7 @@ class Transaction:
 		padding = '      '
 		if(self.tx_index_in_block == 0) : print(padding, '|', self.tx_index_in_block, 'MINING TX')
 		else : print(padding, '|', self.tx_index_in_block)
+		print(padding, 'hash', self.tx_hash)
 		print(padding, 'version', self.version)
 		print(padding, self.in_count, 'input(s)')
 		self.tx_input.print()

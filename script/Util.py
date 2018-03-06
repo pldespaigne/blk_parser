@@ -70,17 +70,25 @@ def base58Encode(num):
 def intToHexString(val, invert=True, swap=True):
 	temp_hex = list(str(hex(val)))
 	temp_hex = temp_hex[2:]#delete the '0x' at the begining
-	if invert: temp_hex = temp_hex[::-1]#invert string ('hello'-> 'olleh')
+	return formatHashString(temp_hex, invert, swap)
+
+def formatHashString(hash_str, invert, swap):
+	res = ''
+	if invert: hash_str = hash_str[::-1]#invert string ('hello'-> 'olleh')
 	if swap:
 		i = 0#swap char 2 by 2 ('abcdef' -> 'badcfe')
-		while i < len(temp_hex)-1:
-			a = temp_hex[i]
-			b = temp_hex[i+1]
-			temp_hex[i] = b
-			temp_hex[i+1] = a
+		while i < len(hash_str)-1:
+			a = hash_str[i]
+			b = hash_str[i+1]
+			# hash_str[i] = b
+			# hash_str[i+1] = a
+			res += b
+			res += a
 			i += 2
-	res = ''.join(temp_hex)
-	return '0x'+res
+	else:
+		for c in hash_str:
+			res += c
+	return '0x' + res
 
 def getDataFromHexStringScript(script):
 	res = ''

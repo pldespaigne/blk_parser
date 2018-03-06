@@ -19,6 +19,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import hashlib
+
 import Util
 
 class Header:
@@ -40,11 +42,24 @@ class Header:
 
 		bytes_nonce = bytes_rest
 
+		h_sha256 = hashlib.sha256()
+		h_sha256.update(bytes_version)
+		h_sha256.update(bytes_prev_block_id)
+		h_sha256.update(bytes_merkle_root)
+		h_sha256.update(bytes_time)
+		h_sha256.update(bytes_bits)
+		h_sha256.update(bytes_nonce)
+		bytes_hash = h_sha256.digest()
+		h_sha256 = hashlib.sha256()
+		h_sha256.update(bytes_hash)
+		self.hash = h_sha256.hexdigest()
+		self.hash = Util.formatHashString(self.hash, True, True)
+
 		self.version = int.from_bytes(bytes_version, byteorder='little')
 
 		self.prev_block_id = Util.intToHexString(int.from_bytes(bytes_prev_block_id, byteorder='big'))
 
-		self.merkle_root = Util.intToHexString(int.from_bytes(bytes_merkle_root, byteorder='big'), False, False)
+		self.merkle_root = Util.intToHexString(int.from_bytes(bytes_merkle_root, byteorder='big'), True, True)
 		self.time = int.from_bytes(bytes_time, byteorder='little')
 		self.bits = int.from_bytes(bytes_bits, byteorder='little')
 		self.nonce = int.from_bytes(bytes_nonce, byteorder='little')
@@ -52,10 +67,8 @@ class Header:
 	def print(self):
 		print('Header :')
 		print('       version', self.version)
-
-		# print('       >', hex(self.prev_block_id))
-		print('       id du block precedent', self.prev_block_id)
-
+		print('       hash du block', self.hash)
+		print('       hash du block precedent', self.prev_block_id)
 		print('       merkle root', self.merkle_root)
 		print('       time', self.time)
 		print('       bits', self.bits)

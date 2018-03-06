@@ -1,7 +1,4 @@
 TODO : 
 	- create fast parsing (only tx data)
-	- correct hash
-	- add tx hash and block hash
-
 
 pySpark

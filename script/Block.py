@@ -19,19 +19,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import json
-
 from Header import Header
 from Transactions import Transactions
 
 class Block:
-	# def __init__(self, _magic, _size, binary_header, binary_tx_count, binary_data):
-	# 	self.magic = _magic
-	# 	self.size = _size
-	# 	self.header = binary_header
-	# 	self.tx_count = binary_tx_count
-	# 	self.data = binary_data
-
 	def __init__(self, block_bytes_array, _block_num):
 		bytes_magic = block_bytes_array[:4]
 		bytes_rest = block_bytes_array[4:]
