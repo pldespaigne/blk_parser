@@ -30,13 +30,13 @@ class BlockIndex:
 	def __init__(self, _path):
 		self.path = _path
 		self.size = 0
-		self.byte_index = []
-		self.block_size = []
+		self.byte_index = [] # starting byte of a block
+		self.block_size = [] # size (in bytes) of the coresponding block
 		self.buildBlockIndexFromFile()
 
 	def buildBlockIndexFromFile(self):
 
-		print('indexing . . .')
+		print('indexing BLOCKS . . .')
 		time_start = time.time()
 
 		with open(self.path, 'rb') as block_file: # open file in read binary mode
@@ -70,6 +70,7 @@ class BlockIndex:
 		block_file.closed # close the file
 		time_end = time.time()
 		print('end of indexing in', time_end - time_start, 's')
+		print('Block Index : [ 0 -', self.size - 1, ']')
 
 	def appendBlock(self, _byte_index, _block_size):
 		self.byte_index.append(_byte_index)
@@ -77,8 +78,8 @@ class BlockIndex:
 		self.size += 1
 
 	def parseBlock(self, index):
-		print('parsing block . . .')
-		time_start = time.time()
+		print('parsing block', index, '. . .')
+		# time_start = time.time()
 
 		with open(self.path, 'rb') as block_file: # open file in read binary mode
 			block_file.seek(self.byte_index[index])
@@ -87,11 +88,12 @@ class BlockIndex:
 
 		block = Block(bytes_block, index)
 
-		time_end = time.time()
-		print('end of parsing block in', time_end - time_start, 's')
+		# time_end = time.time()
+		# print('end of parsing block in', time_end - time_start, 's')
 
 		return block
 
 	def print(self):
 		for i in range(0, self.size):
 			print('block', i, 'starting at', self.byte_index[i], 'with a size of', self.block_size[i], 'byte(s)')
+		print('Block Index : [ 0 -', self.size - 1, ']')

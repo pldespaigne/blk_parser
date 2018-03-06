@@ -1,4 +1,6 @@
 TODO : 
-	- create fast parsing (only tx data)
+	- write (append) tx to json file FAST
+	- remove french text
+	- rewrite CLI help
 
 pySpark

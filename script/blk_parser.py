@@ -27,43 +27,75 @@ import Cli
 import Util
 
 from BlockIndex import BlockIndex
+from TxIndex import TxIndex
 
 Cli.printLegal()
 
 running = True
 block_index = None
+tx_index = None
 block = None
+tx = None
+input_file = ''
+output_file = ''
 
 while running:
 	command = input('blk_parser > ')
 	command = command.split(' ')
+
+	############################################################################
 	if len(command) == 1:
-		if command[0] == 'quit' or command[0] == 'q' or command[0] == 'exit':
+		if command[0] == 'quit' or command[0] == 'quit()' or command[0] == 'q' or command[0] == 'exit' or command[0] == 'exit()':
 			running = False
-		elif command[0] == 'help':
+		elif command[0] == 'help' or command[0] == 'h' or command[0] == 'man':
 			Cli.printHelp()
 		else:
 			Cli.unknownCommand(command)
 
+	############################################################################
 	elif len(command) == 2:
 		if command[0] == 'index':
-			# block_index = BlockIndex('../data/blk00000.dat')
-			block_index = BlockIndex(command[1])
-
-			# block42 = block_index.parseBlock(42)
-			# block42.print()
+			if command[1] == 'block':
+				block_index = BlockIndex(input_file)
+			elif command[1] == 'tx':
+				if block_index == None: block_index = BlockIndex(input_file)
+				tx_index = TxIndex(block_index)
+			else:
+				Cli.unknownCommand(command)
+		elif command[0] == 'input':
+			input_file = command[1]
 		else:
 			Cli.unknownCommand(command)
+
+	############################################################################
 	elif len(command) == 3:
 		if command[0] == 'show':
 			if command[1] == 'block':
-				i = int(command[2])
-				block = block_index.parseBlock(i)
-				block.print()
+				if command[2] == 'index':
+					if block_index == None: block_index = BlockIndex(input_file)
+					block_index.print()
+				else:
+					if block_index == None: block_index = BlockIndex(input_file)
+					i = int(command[2])
+					block = block_index.parseBlock(i)
+					block.print()
+			elif command[1] == 'tx':
+				if command[2] == 'index':
+					if block_index == None: block_index = BlockIndex(input_file)
+					if tx_index == None: tx_index = TxIndex(block_index)
+					tx_index.print()
+				else:
+					if block_index == None: block_index = BlockIndex(input_file)
+					if tx_index == None: tx_index = TxIndex(block_index)
+					i = int(command[2])
+					tx = tx_index.parseTx(i)
+					tx.print()
 			else:
 				Cli.unknownCommand(command)
 		else:
 			Cli.unknownCommand(command)
+
+	############################################################################
 	else:
 		Cli.unknownCommand(command)
 	
