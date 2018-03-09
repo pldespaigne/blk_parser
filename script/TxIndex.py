@@ -29,6 +29,7 @@ class TxIndex:
 	def __init__(self, _block_index):
 		self.path = _block_index.path
 		self.size = 0
+		self.block_num = []
 		self.byte_index = []
 		self.tx_size = []
 		self.buildTxIndexFromBlockIndex(_block_index)
@@ -153,7 +154,7 @@ class TxIndex:
 
 					size += 4 # locktime field is on 4 bytes
 
-					self.appendTx(start, size) # append tx to index
+					self.appendTx(start, size, i) # append tx to index
 
 				# end of all tx of the current block
 
@@ -162,9 +163,10 @@ class TxIndex:
 		print('end of indexing in', time_end - time_start, 's')
 		print('Tx Index : [ 0 -', self.size - 1, ']')
 
-	def appendTx(self, _byte_index, _tx_size):
+	def appendTx(self, _byte_index, _tx_size, _block_num):
 		self.byte_index.append(_byte_index)
 		self.tx_size.append(_tx_size)
+		self.block_num.append(_block_num)
 		self.size += 1
 
 	def parseTx(self, index):
@@ -181,5 +183,5 @@ class TxIndex:
 
 	def print(self):
 		for i in range(0, self.size):
-			print('tx', i, 'starting at', self.byte_index[i], 'with a size of', self.block_size[i], 'byte(s)')
+			print('tx', i, 'of block', self.block_num[i], 'starting at', self.byte_index[i], 'with a size of', self.tx_size[i], 'byte(s)')
 		print('Tx Index : [ 0 -', self.size - 1, ']')

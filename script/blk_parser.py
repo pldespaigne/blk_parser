@@ -25,6 +25,7 @@ import time
 
 import Cli
 import Util
+import FastParsing
 
 from BlockIndex import BlockIndex
 from TxIndex import TxIndex
@@ -36,8 +37,8 @@ block_index = None
 tx_index = None
 block = None
 tx = None
-input_file = ''
-output_file = ''
+input_file = '../data/blk00000.dat'
+output_file = '../result/tx00000.json'
 
 while running:
 	command = input('blk_parser > ')
@@ -64,6 +65,14 @@ while running:
 				Cli.unknownCommand(command)
 		elif command[0] == 'input':
 			input_file = command[1]
+		elif command[0] == 'parse':
+			if command[1] != 'd': output_file = command[1]
+			if os.path.isfile(output_file):
+				ans = input('The file will be overwritten, are you sure (Y/n) ?')
+				if ans != 'Y': continue
+			if block_index == None: block_index = BlockIndex(input_file)
+			if tx_index == None: tx_index = TxIndex(block_index)
+			FastParsing.parse(output_file, block_index, tx_index)
 		else:
 			Cli.unknownCommand(command)
 
@@ -90,6 +99,11 @@ while running:
 					i = int(command[2])
 					tx = tx_index.parseTx(i)
 					tx.print()
+			elif command[1] == 'input':
+				if command[2] == 'file':
+					print('input file :', input_file)
+				else:
+					Cli.unknownCommand(command)
 			else:
 				Cli.unknownCommand(command)
 		else:
