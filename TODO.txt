@@ -1,5 +1,4 @@
 TODO : 
-	- write (append) tx to json file FAST
 	- remove french text
 	- rewrite CLI help
 

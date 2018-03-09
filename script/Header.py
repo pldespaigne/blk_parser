@@ -20,6 +20,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import hashlib
+import datetime
 
 import Util
 
@@ -70,6 +71,6 @@ class Header:
 		print('       hash du block', self.hash)
 		print('       hash du block precedent', self.prev_block_id)
 		print('       merkle root', self.merkle_root)
-		print('       time', self.time)
+		print('       time', self.time, '(', datetime.datetime.fromtimestamp(self.time).strftime('%Y-%m-%d %H:%M:%S'), ')')
 		print('       bits', self.bits)
 		print('       nonce', self.nonce)

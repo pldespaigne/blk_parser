@@ -31,22 +31,28 @@ class Transactions:
 		self.transactions = []
 		bytes_rest = bytes_tx_data
 		for i in range(0, tx_count):
+			bytes_tx = bytes_rest
 			bytes_version = bytes_rest[:4]
 			bytes_rest = bytes_rest[4:]
+			size = 4
 
 			bytes_in_count = bytes_rest[:1]#get varInt prefix
 			bytes_rest = bytes_rest[1:]
+			size += 1
 
 			#check if varInt is on 1, 2, 4, or 8 bytes
 			if(bytes_in_count[0] == 253):#varInt is on 2 bytes AFTER the prefix
 				bytes_in_count = bytes_rest[:2]
 				bytes_rest = bytes_rest[2:]
+				size += 2
 			elif(bytes_in_count[0] == 254):#varInt is on 4 bytes AFTER the prefix
 				bytes_in_count = bytes_rest[:4]
 				bytes_rest = bytes_rest[4:]
+				size += 4
 			elif(bytes_in_count[0] == 255):#varInt is on 8 bytes AFTER the prefix
 				bytes_in_count = bytes_rest[:8]
 				bytes_rest = bytes_rest[8:]
+				size += 8
 			#else varInt was on 1 bytes, nothing to do
 
 			in_count = int.from_bytes(bytes_in_count, byteorder='little')
@@ -55,32 +61,39 @@ class Transactions:
 			if(i == 0) : isCoinbase = True
 			tx_input = TxInput(bytes_rest, in_count, isCoinbase)
 			bytes_rest = bytes_rest[tx_input.size_bytes:]
+			size += tx_input.size_bytes
 
 			bytes_out_count = bytes_rest[:1]#get varInt prefix
 			bytes_rest = bytes_rest[1:]
+			size += 1
 
 			#check if varInt is on 1, 2, 4, or 8 bytes
 			if(bytes_out_count[0] == 253):#varInt is on 2 bytes AFTER the prefix
 				bytes_out_count = bytes_rest[:2]
 				bytes_rest = bytes_rest[2:]
+				size += 2
 			elif(bytes_out_count[0] == 254):#varInt is on 4 bytes AFTER the prefix
 				bytes_out_count = bytes_rest[:4]
 				bytes_rest = bytes_rest[4:]
+				size += 4
 			elif(bytes_out_count[0] == 255):#varInt is on 8 bytes AFTER the prefix
 				bytes_out_count = bytes_rest[:8]
 				bytes_rest = bytes_rest[8:]
+				size += 8
 			#else varInt was on 1 bytes, nothing to do
 
 			out_count = int.from_bytes(bytes_out_count, byteorder='little')
 
 			tx_output = TxOutput(bytes_rest, out_count)
 			bytes_rest = bytes_rest[tx_output.size_bytes:]
+			size += tx_output.size_bytes
 
 			bytes_lock_time = bytes_rest[:4]
 			bytes_rest = bytes_rest[4:]
+			size += 4
 
 			h_sha256 = hashlib.sha256()
-			h_sha256.update(bytes_tx_data)
+			h_sha256.update(bytes_tx[:size])
 			h_bytes = h_sha256.digest()
 			h_sha256 = hashlib.sha256()
 			h_sha256.update(h_bytes)

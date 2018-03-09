@@ -19,6 +19,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import hashlib
+
 import Util
 
 class TxInput:
@@ -66,7 +68,16 @@ class TxInput:
 			bytes_rest = bytes_rest[4:]
 			self.size_bytes += 4
 
-			tx_hash = int.from_bytes(bytes_tx_hash, byteorder='big')
+			tx_hash = hex(int.from_bytes(bytes_tx_hash, byteorder='big'))
+			# tx_hash = hex(bytes_tx_hash)
+			# h_sha256 = hashlib.sha256()
+			# h_sha256.update(bytes_tx_hash)
+			# h_bytes = h_sha256.digest()
+			# h_sha256 = hashlib.sha256()
+			# h_sha256.update(h_bytes)
+			# tx_hash = h_sha256.hexdigest()
+			tx_hash = Util.formatHashString(tx_hash[2:], True, True)
+
 			out_index = int.from_bytes(bytes_out_index, byteorder='little')
 			#script_length
 

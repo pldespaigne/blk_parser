@@ -20,11 +20,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 class JsonTxIn:
-	def __init__(self, _hashPrevOut, _indexPrevOut, _value):
-		self.address = 'NO_ADDRESS' # complete this field later with second script pass
+	def __init__(self, _address, _hashPrevOut, _indexPrevOut, _value):
+		self.address = _address # get this value later
 		self.hashPrevOut = _hashPrevOut
 		self.indexPrevOut = _indexPrevOut
-		self.value = _value
+		self.value = _value # get this value later
 
 class JsonTxOut:
 	def __init__(self, _address, _indexOut, _value):
@@ -34,8 +34,8 @@ class JsonTxOut:
 
 class JsonTx:
 
-	def __init__(self, _timestamp, _total_value, _tx_ins, _tx_outs, _txid):
-		self.exchange_rate = 'NO_X_RATE' # get this value later from market data
+	def __init__(self, _exchange_rate, _timestamp, _total_value, _tx_ins, _tx_outs, _txid):
+		self.exchange_rate = _exchange_rate # get this value later from market data
 		self.timestamp = _timestamp # get this field from block
 		self.total_value = _total_value
 		self.tx_ins = _tx_ins

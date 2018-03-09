@@ -155,7 +155,7 @@ class TxIndex:
 					size += 4 # locktime field is on 4 bytes
 
 					self.appendTx(start, size, i) # append tx to index
-
+					start = start + size
 				# end of all tx of the current block
 
 		block_file.closed # close the file
