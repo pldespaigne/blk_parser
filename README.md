@@ -49,7 +49,7 @@ blk_parser> help
 * To display the help message run the script with `-h` option
 ```
 $> cd script
-$> python3 -h
+$> python3 blk_parser.py -h
 ```
 
 
