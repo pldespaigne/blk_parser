@@ -19,8 +19,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
+
 from Header import Header
 from Transactions import Transactions
+
+# more info on data structure here :
+# Block 		: <https://en.bitcoin.it/wiki/Block>
+# Block Header 	: <https://en.bitcoin.it/wiki/Block_hashing_algorithm>
+# Transaction	: <https://en.bitcoin.it/wiki/Transaction>
 
 class Block:
 	def __init__(self, block_bytes_array, _block_num):
@@ -33,20 +40,22 @@ class Block:
 		bytes_header = bytes_rest[:80]
 		bytes_rest = bytes_rest[80:]
 
-		bytes_tx_count = bytes_rest[:1]#get varInt prefix
+		bytes_tx_count = bytes_rest[:1] # get varInt prefix
 		bytes_rest = bytes_rest[1:]
 
-		#check if varInt is on 1, 2, 4, or 8 bytes
-		if(bytes_tx_count[0] == 253):#varInt is on 2 bytes AFTER the prefix
+		# check if varInt is on 1, 2, 4, or 8 bytes
+		if(bytes_tx_count[0] == 253): # varInt is on 2 bytes AFTER the prefix
 			bytes_tx_count = bytes_rest[:2]
 			bytes_rest = bytes_rest[2:]
-		elif(bytes_tx_count[0] == 254):#varInt is on 4 bytes AFTER the prefix
+
+		elif(bytes_tx_count[0] == 254): # varInt is on 4 bytes AFTER the prefix
 			bytes_tx_count = bytes_rest[:4]
 			bytes_rest = bytes_rest[4:]
-		elif(bytes_tx_count[0] == 255):#varInt is on 8 bytes AFTER the prefix
+
+		elif(bytes_tx_count[0] == 255): # varInt is on 8 bytes AFTER the prefix
 			bytes_tx_count = bytes_rest[:8]
 			bytes_rest = bytes_rest[8:]
-		#else varInt was on 1 bytes, nothing to do
+		# else varInt was on 1 bytes, nothing to do
 			
 
 		bytes_tx_data = bytes_rest
@@ -57,13 +66,6 @@ class Block:
 		self.tx_count = int.from_bytes(bytes_tx_count, byteorder='little')
 		self.header = Header(bytes_header)
 		self.transactions = Transactions(bytes_tx_data, self.tx_count)
-
-
-	# def saveToFile(self, path):
-	# 	json_obj = json.dumps({'magic': self.magic, 'size': self.size, 'header': self.header, 'tx_count': self.tx_count, 'data': self.data})
-	# 	with open(path, 'w') as block_file:
-	# 		block_file.write(json_obj)
-	# 	block_file.closed
 
 	def getNet(self):
 		if(self.magic == 3652501241): return 'main network'

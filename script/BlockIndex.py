@@ -79,7 +79,6 @@ class BlockIndex:
 
 	def parseBlock(self, index):
 		print('parsing block', index, '. . .')
-		# time_start = time.time()
 
 		with open(self.path, 'rb') as block_file: # open file in read binary mode
 			block_file.seek(self.byte_index[index])
@@ -87,9 +86,6 @@ class BlockIndex:
 		block_file.closed # close the file
 
 		block = Block(bytes_block, index)
-
-		# time_end = time.time()
-		# print('end of parsing block in', time_end - time_start, 's')
 
 		return block
 

@@ -19,12 +19,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
+# simple definition of json structure (see example below)
+
 class JsonTxIn:
 	def __init__(self, _address, _hashPrevOut, _indexPrevOut, _value):
-		self.address = _address # get this value later
+		self.address = _address # get this value later by readdressing
 		self.hashPrevOut = _hashPrevOut
 		self.indexPrevOut = _indexPrevOut
-		self.value = _value # get this value later
+		self.value = _value # get this value later by readdressing
 
 class JsonTxOut:
 	def __init__(self, _address, _indexOut, _value):
@@ -41,3 +44,34 @@ class JsonTx:
 		self.tx_ins = _tx_ins
 		self.tx_outs = _tx_outs
 		self.txid = _txid
+
+
+
+# EXAMPLE OF A JSON TRANSACTION
+
+# {
+# 	"exchange_rate": "NO_X_RATE",
+# 	"timestamp": 1231731025,
+# 	"total_value": 5000000000,
+# 	"tx_ins": [
+# 		{
+# 			"address": "NO_ADDRESS",
+# 			"hashPrevOut": "0x0437cd7f8525ceed2324359c2d0ba26006d92d856a9c20fa0241106ee5a597c9",
+# 			"indexPrevOut": 0,
+# 			"value": 5000000000
+# 		}
+# 	],
+# 	"tx_outs": [
+# 		{
+# 			"address": "1Q2TWHE3GMdB6BZKafqwxXtWAWgFt5Jvm3",
+# 			"indexOut": 0,
+# 			"value": 1000000000
+# 		},
+# 		{
+# 			"address": "12cbQLTFMXRnSzktFkuoG3eHoMeFtpTu3S",
+# 			"indexOut": 0,
+# 			"value": 4000000000
+# 		}
+# 	],
+# 	"txid": "0xf4184fc596403b9d638783cf57adfe4c75c605f6356fbc91338530e9831e9e16"
+# }

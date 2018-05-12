@@ -24,6 +24,11 @@ import datetime
 
 import Util
 
+# more info on data structure here :
+# Block 		: <https://en.bitcoin.it/wiki/Block>
+# Block Header 	: <https://en.bitcoin.it/wiki/Block_hashing_algorithm>
+# Transaction	: <https://en.bitcoin.it/wiki/Transaction>
+
 class Header:
 	def __init__(self, bytes_header):
 		bytes_version = bytes_header[:4]
@@ -43,6 +48,7 @@ class Header:
 
 		bytes_nonce = bytes_rest
 
+		# calculate block hash
 		h_sha256 = hashlib.sha256()
 		h_sha256.update(bytes_version)
 		h_sha256.update(bytes_prev_block_id)

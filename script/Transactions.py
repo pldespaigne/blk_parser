@@ -26,6 +26,11 @@ import Util
 from TxInput import TxInput
 from TxOutput import TxOutput
 
+# more info on data structure here :
+# Block 		: <https://en.bitcoin.it/wiki/Block>
+# Block Header 	: <https://en.bitcoin.it/wiki/Block_hashing_algorithm>
+# Transaction	: <https://en.bitcoin.it/wiki/Transaction>
+
 class Transactions:
 	def __init__(self, bytes_tx_data, tx_count):
 		self.transactions = []
@@ -36,24 +41,24 @@ class Transactions:
 			bytes_rest = bytes_rest[4:]
 			size = 4
 
-			bytes_in_count = bytes_rest[:1]#get varInt prefix
+			bytes_in_count = bytes_rest[:1] # get varInt prefix
 			bytes_rest = bytes_rest[1:]
 			size += 1
 
-			#check if varInt is on 1, 2, 4, or 8 bytes
-			if(bytes_in_count[0] == 253):#varInt is on 2 bytes AFTER the prefix
+			# check if varInt is on 1, 2, 4, or 8 bytes
+			if(bytes_in_count[0] == 253): # varInt is on 2 bytes AFTER the prefix
 				bytes_in_count = bytes_rest[:2]
 				bytes_rest = bytes_rest[2:]
 				size += 2
-			elif(bytes_in_count[0] == 254):#varInt is on 4 bytes AFTER the prefix
+			elif(bytes_in_count[0] == 254): # varInt is on 4 bytes AFTER the prefix
 				bytes_in_count = bytes_rest[:4]
 				bytes_rest = bytes_rest[4:]
 				size += 4
-			elif(bytes_in_count[0] == 255):#varInt is on 8 bytes AFTER the prefix
+			elif(bytes_in_count[0] == 255): # varInt is on 8 bytes AFTER the prefix
 				bytes_in_count = bytes_rest[:8]
 				bytes_rest = bytes_rest[8:]
 				size += 8
-			#else varInt was on 1 bytes, nothing to do
+			# else varInt was on 1 bytes, nothing to do
 
 			in_count = int.from_bytes(bytes_in_count, byteorder='little')
 
@@ -63,24 +68,24 @@ class Transactions:
 			bytes_rest = bytes_rest[tx_input.size_bytes:]
 			size += tx_input.size_bytes
 
-			bytes_out_count = bytes_rest[:1]#get varInt prefix
+			bytes_out_count = bytes_rest[:1] # get varInt prefix
 			bytes_rest = bytes_rest[1:]
 			size += 1
 
-			#check if varInt is on 1, 2, 4, or 8 bytes
-			if(bytes_out_count[0] == 253):#varInt is on 2 bytes AFTER the prefix
+			# check if varInt is on 1, 2, 4, or 8 bytes
+			if(bytes_out_count[0] == 253): # varInt is on 2 bytes AFTER the prefix
 				bytes_out_count = bytes_rest[:2]
 				bytes_rest = bytes_rest[2:]
 				size += 2
-			elif(bytes_out_count[0] == 254):#varInt is on 4 bytes AFTER the prefix
+			elif(bytes_out_count[0] == 254): # varInt is on 4 bytes AFTER the prefix
 				bytes_out_count = bytes_rest[:4]
 				bytes_rest = bytes_rest[4:]
 				size += 4
-			elif(bytes_out_count[0] == 255):#varInt is on 8 bytes AFTER the prefix
+			elif(bytes_out_count[0] == 255): # varInt is on 8 bytes AFTER the prefix
 				bytes_out_count = bytes_rest[:8]
 				bytes_rest = bytes_rest[8:]
 				size += 8
-			#else varInt was on 1 bytes, nothing to do
+			# else varInt was on 1 bytes, nothing to do
 
 			out_count = int.from_bytes(bytes_out_count, byteorder='little')
 
@@ -92,6 +97,7 @@ class Transactions:
 			bytes_rest = bytes_rest[4:]
 			size += 4
 
+			# calculate hash of the transaction (txid)
 			h_sha256 = hashlib.sha256()
 			h_sha256.update(bytes_tx[:size])
 			h_bytes = h_sha256.digest()

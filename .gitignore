@@ -1,10 +1,19 @@
 cdc/
-experiment/
+data/
+img/
+metastore_db/
 paper/
+readdressed/
+result/
 
 script/__pycache__/
+script/metastore_db/
+script/spark-warehouse
 
 *.pyc
 *.url
 *.dat
 *.json
+*.log
+*.png
+*.jpg

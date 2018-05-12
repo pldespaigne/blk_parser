@@ -25,6 +25,11 @@ import time
 
 from Transactions import Transactions
 
+# more info on data structure here :
+# Block 		: <https://en.bitcoin.it/wiki/Block>
+# Block Header 	: <https://en.bitcoin.it/wiki/Block_hashing_algorithm>
+# Transaction	: <https://en.bitcoin.it/wiki/Transaction>
+
 class TxIndex:
 	def __init__(self, _block_index):
 		self.path = _block_index.path
@@ -52,17 +57,21 @@ class TxIndex:
 
 				block_file.seek(_block_index.byte_index[i] + 88)
 				
-				byte_tx_count = block_file.read(1) # reading the TX COUNT
-				#check if varInt is on 1, 2, 4, or 8 bytes
-				if(byte_tx_count[0] == 253):#varInt is on 2 bytes AFTER the prefix
+				byte_tx_count = block_file.read(1) # reading the TX COUNT.
+
+				# check if varInt is on 1, 2, 4, or 8 bytes
+				if(byte_tx_count[0] == 253): # varInt is on 2 bytes AFTER the prefix
 					byte_tx_count = block_file.read(2)
 					start = _block_index.byte_index[i] + 88 + 3
-				elif(byte_tx_count[0] == 254):#varInt is on 4 bytes AFTER the prefix
+
+				elif(byte_tx_count[0] == 254): # varInt is on 4 bytes AFTER the prefix
 					byte_tx_count = block_file.read(4)
 					start = _block_index.byte_index[i] + 88 + 5
-				elif(byte_tx_count[0] == 255):#varInt is on 8 bytes AFTER the prefix
+
+				elif(byte_tx_count[0] == 255): # varInt is on 8 bytes AFTER the prefix
 					byte_tx_count = block_file.read(8)
 					start = _block_index.byte_index[i] + 88 + 9
+
 				else: # varInt was on 1 bytes, nothing to do
 					start = _block_index.byte_index[i] + 88 + 1
 
@@ -74,14 +83,17 @@ class TxIndex:
 
 					byte_in_count = block_file.read(1) # reading the INPUT COUNT
 					size += 1
-					#check if varInt is on 1, 2, 4, or 8 bytes
-					if(byte_in_count[0] == 253):#varInt is on 2 bytes AFTER the prefix
+
+					# check if varInt is on 1, 2, 4, or 8 bytes
+					if(byte_in_count[0] == 253): # varInt is on 2 bytes AFTER the prefix
 						byte_in_count = block_file.read(2)
 						size += 2
-					elif(byte_in_count[0] == 254):#varInt is on 4 bytes AFTER the prefix
+
+					elif(byte_in_count[0] == 254): # varInt is on 4 bytes AFTER the prefix
 						byte_in_count = block_file.read(4)
 						size += 4
-					elif(byte_in_count[0] == 255):#varInt is on 8 bytes AFTER the prefix
+
+					elif(byte_in_count[0] == 255): # varInt is on 8 bytes AFTER the prefix
 						byte_in_count = block_file.read(8)
 						size += 8
 					# else: # varInt was on 1 bytes, nothing to do
@@ -94,16 +106,20 @@ class TxIndex:
 
 						byte_script_size = block_file.read(1) # reading the SCRIPT SIZE
 						size += 1
-						#check if varInt is on 1, 2, 4, or 8 bytes
-						if(byte_script_size[0] == 253):#varInt is on 2 bytes AFTER the prefix
+
+						# check if varInt is on 1, 2, 4, or 8 bytes
+						if(byte_script_size[0] == 253): # varInt is on 2 bytes AFTER the prefix
 							byte_script_size = block_file.read(2)
 							size += 2
-						elif(byte_script_size[0] == 254):#varInt is on 4 bytes AFTER the prefix
+
+						elif(byte_script_size[0] == 254): # varInt is on 4 bytes AFTER the prefix
 							byte_script_size = block_file.read(4)
 							size += 4
-						elif(byte_script_size[0] == 255):#varInt is on 8 bytes AFTER the prefix
+
+						elif(byte_script_size[0] == 255): # varInt is on 8 bytes AFTER the prefix
 							byte_script_size = block_file.read(8)
 							size += 8
+
 						# else: # varInt was on 1 bytes, nothing to do
 
 						script_size = int.from_bytes(byte_script_size, byteorder='little')
@@ -114,16 +130,20 @@ class TxIndex:
 
 					byte_out_count = block_file.read(1) # reading the OUTPUT COUNT
 					size += 1
-					#check if varInt is on 1, 2, 4, or 8 bytes
-					if(byte_out_count[0] == 253):#varInt is on 2 bytes AFTER the prefix
+
+					# check if varInt is on 1, 2, 4, or 8 bytes
+					if(byte_out_count[0] == 253): # varInt is on 2 bytes AFTER the prefix
 						byte_out_count = block_file.read(2)
 						size += 2
-					elif(byte_out_count[0] == 254):#varInt is on 4 bytes AFTER the prefix
+
+					elif(byte_out_count[0] == 254): # varInt is on 4 bytes AFTER the prefix
 						byte_in_count = block_file.read(4)
 						size += 4
-					elif(byte_out_count[0] == 255):#varInt is on 8 bytes AFTER the prefix
+
+					elif(byte_out_count[0] == 255): # varInt is on 8 bytes AFTER the prefix
 						byte_out_count = block_file.read(8)
 						size += 8
+
 					# else: # varInt was on 1 bytes, nothing to do
 
 					out_count = int.from_bytes(byte_out_count, byteorder='little')
@@ -134,14 +154,15 @@ class TxIndex:
 
 						byte_script_size = block_file.read(1) # reading the SCRIPT SIZE
 						size += 1
-						#check if varInt is on 1, 2, 4, or 8 bytes
-						if(byte_script_size[0] == 253):#varInt is on 2 bytes AFTER the prefix
+
+						# check if varInt is on 1, 2, 4, or 8 bytes
+						if(byte_script_size[0] == 253): # varInt is on 2 bytes AFTER the prefix
 							byte_script_size = block_file.read(2)
 							size += 2
-						elif(byte_script_size[0] == 254):#varInt is on 4 bytes AFTER the prefix
+						elif(byte_script_size[0] == 254): # varInt is on 4 bytes AFTER the prefix
 							byte_script_size = block_file.read(4)
 							size += 4
-						elif(byte_script_size[0] == 255):#varInt is on 8 bytes AFTER the prefix
+						elif(byte_script_size[0] == 255): # varInt is on 8 bytes AFTER the prefix
 							byte_script_size = block_file.read(8)
 							size += 8
 						# else: # varInt was on 1 bytes, nothing to do

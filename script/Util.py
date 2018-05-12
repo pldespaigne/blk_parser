@@ -21,6 +21,12 @@
 
 import hashlib
 
+#############################################################
+#	BITCOIN ADDRESS UTIL
+#	more info : <https://en.bitcoin.it/wiki/Technical_background_of_version_1_Bitcoin_addresses>
+#	more info : <https://en.bitcoin.it/wiki/Base58Check_encoding>
+
+# convert a public key to a bitcoin address
 def pubKStringToAddress(pub_k):
 	address_bytes = bytearray.fromhex(pub_k)
 
@@ -34,6 +40,7 @@ def pubKStringToAddress(pub_k):
 
 	return base58Check(hash_bytes.hex())
 
+# perform the algo called Base58Check (see 2nd link at the top of this section)
 def base58Check(hash160):
 	hash_bytes = bytearray.fromhex(hash160)
 	extend_bytes = b''.join([b'\x00',hash_bytes])
@@ -54,7 +61,7 @@ def base58Check(hash160):
 	base58 = base58Encode(bigint)
 	return '1'+base58
 
-
+# Base 58 encoding
 def base58Encode(num):
 	alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 	encode = ''
@@ -67,21 +74,26 @@ def base58Encode(num):
 		encode = alphabet[tmp] + encode
 	return encode
 
+
+
+#############################################################
+#	STRING UTIL
+
+# convert a int into an hexdecimal string
 def intToHexString(val, invert=True, swap=True):
 	temp_hex = list(str(hex(val)))
-	temp_hex = temp_hex[2:]#delete the '0x' at the begining
+	temp_hex = temp_hex[2:] # delete the '0x' at the beginning
 	return formatHashString(temp_hex, invert, swap)
 
+# format a hash string, in the raw data many hash or number are in big endian
 def formatHashString(hash_str, invert, swap):
 	res = ''
-	if invert: hash_str = hash_str[::-1]#invert string ('hello'-> 'olleh')
+	if invert: hash_str = hash_str[::-1] # invert string ('hello'-> 'olleh')
 	if swap:
-		i = 0#swap char 2 by 2 ('abcdef' -> 'badcfe')
+		i = 0 # swap char 2 by 2 ('abcdef' -> 'badcfe')
 		while i < len(hash_str)-1:
 			a = hash_str[i]
 			b = hash_str[i+1]
-			# hash_str[i] = b
-			# hash_str[i+1] = a
 			res += b
 			res += a
 			i += 2
@@ -90,56 +102,108 @@ def formatHashString(hash_str, invert, swap):
 			res += c
 	return '0x' + res
 
+# format a hash string, in the raw data many hash or number are in big endian
+def formatPrevHashString(hash_str, invert, swap):
+	res = ''
+	if hash_str != '0':
+		while len(hash_str) < 64: # padd the str with 0 at the beginning until it size is 64
+			hash_str = '0' + hash_str
+	if invert: hash_str = hash_str[::-1] # invert string ('hello'-> 'olleh')
+	if swap:
+		i = 0 # swap char 2 by 2 ('abcdef' -> 'badcfe')
+		while i < len(hash_str)-1:
+			a = hash_str[i]
+			b = hash_str[i+1]
+			res += b
+			res += a
+			i += 2
+	else:
+		for c in hash_str:
+			res += c
+	return '0x' + res
+
+
+
+#############################################################
+#	BITCOIN SCRIPT UTIL
+#	more info : <https://en.bitcoin.it/wiki/Script>
+
+# get only user data from a script, i.e. remove all opcode
 def getDataFromHexStringScript(script):
 	res = ''
 	i = 2
-	while i < len(script) - 1:
+	while i < len(script) - 1: # iterate chars 2 by 2
 		a = script[i]
 		b = script[i+1]
 
+		# check if opcode is in range 01 - 4b, get the data
 		if(a == '0' or a == '1' or a == '2' or a == '3'):
 			i+=2
 			strHex = '0x' + a + b
 			intValue = int(strHex, 16)
-			# res += ' PUSHDATA('+str(intValue)+') '
 			j = 0
 			while j < intValue * 2:
-				res += script[i+j]
+				try:
+					res += script[i+j]
+				except IndexError:
+					print()
+					print('INDEX ERROR :', a, b, res, script)
+					print()
+					return res
 				j += 1
 			i += j - 2
 		elif(a + b == '40' or a + b == '41' or a + b == '42' or a + b == '43'):
 			i+=2
 			strHex = '0x' + a + b
 			intValue = int(strHex, 16)
-			# res += ' PUSHDATA('+str(intValue)+') '
 			j = 0
 			while j < intValue * 2:
-				res += script[i+j]
+				try:
+					res += script[i+j]
+				except IndexError:
+					print()
+					print('INDEX ERROR :', a, b, res, script)
+					print()
+					return res
 				j += 1
 			i += j - 2
 		elif(a + b == '44' or a + b == '45' or a + b == '46' or a + b == '47'):
 			i+=2
 			strHex = '0x' + a + b
 			intValue = int(strHex, 16)
-			# res += ' PUSHDATA('+str(intValue)+') '
 			j = 0
 			while j < intValue * 2:
-				res += script[i+j]
+				try:
+					res += script[i+j]
+				except IndexError:
+					print()
+					print('INDEX ERROR :', a, b, res, script)
+					print()
+					return res
 				j += 1
 			i += j - 2
 		elif(a + b == '48' or a + b == '49' or a + b == '4a' or a + b == '4b'):
 			i+=2
 			strHex = '0x' + a + b
 			intValue = int(strHex, 16)
-			# res += ' PUSHDATA('+str(intValue)+') '
 			j = 0
 			while j < intValue * 2:
-				res += script[i+j]
+				try:
+					res += script[i+j]
+				except IndexError:
+					print()
+					print('INDEX ERROR :', a, b, res, script)
+					print()
+					return res
 				j += 1
 			i += j - 2
+		elif(a + b == '4c' or a + b == '4d' or a + b == '4e'):
+			res += ' OP_PUSHDATA1/2/4 '
+			return res
 		i += 2
 	return res
 
+# print a script
 def printHexScript(script):
 	res = ''
 	i = 2
@@ -149,7 +213,6 @@ def printHexScript(script):
 
 		# constants
 		if(a + b == '00') : res += ' OP_FALSE '
-		# TODO add pushdata 01-4b
 		elif(a == '0' or a == '1' or a == '2' or a == '3'):
 			i+=2
 			strHex = '0x' + a + b
@@ -157,7 +220,13 @@ def printHexScript(script):
 			res += ' PUSHDATA('+str(intValue)+') '
 			j = 0
 			while j < intValue * 2:
-				res += script[i+j]
+				try:
+					res += script[i+j]
+				except IndexError:
+					print()
+					print('INDEX ERROR :', a, b, res, script)
+					print()
+					return res
 				j += 1
 			i += j - 2
 		elif(a + b == '40' or a + b == '41' or a + b == '42' or a + b == '43'):
@@ -167,7 +236,13 @@ def printHexScript(script):
 			res += ' PUSHDATA('+str(intValue)+') '
 			j = 0
 			while j < intValue * 2:
-				res += script[i+j]
+				try:
+					res += script[i+j]
+				except IndexError:
+					print()
+					print('INDEX ERROR :', a, b, res, script)
+					print()
+					return res
 				j += 1
 			i += j - 2
 		elif(a + b == '44' or a + b == '45' or a + b == '46' or a + b == '47'):
@@ -177,7 +252,13 @@ def printHexScript(script):
 			res += ' PUSHDATA('+str(intValue)+') '
 			j = 0
 			while j < intValue * 2:
-				res += script[i+j]
+				try:
+					res += script[i+j]
+				except IndexError:
+					print()
+					print('INDEX ERROR :', a, b, res, script)
+					print()
+					return res
 				j += 1
 			i += j - 2
 		elif(a + b == '48' or a + b == '49' or a + b == '4a' or a + b == '4b'):
@@ -187,12 +268,24 @@ def printHexScript(script):
 			res += ' PUSHDATA('+str(intValue)+') '
 			j = 0
 			while j < intValue * 2:
-				res += script[i+j]
+				try:
+					res += script[i+j]
+				except IndexError:
+					print()
+					print('INDEX ERROR :', a, b, res, script)
+					print()
+					return res
 				j += 1
 			i += j - 2
-		elif(a + b == '4c') : res += ' OP_PUSHDATA1 '
-		elif(a + b == '4d') : res += ' OP_PUSHDATA2 '
-		elif(a + b == '4e') : res += ' OP_PUSHDATA4 '
+		elif(a + b == '4c') :
+			res += ' OP_PUSHDATA1 '
+			return res + ' (WIP) ...'
+		elif(a + b == '4d') :
+			res += ' OP_PUSHDATA2 '
+			return res + ' (WIP) ...'
+		elif(a + b == '4e') :
+			res += ' OP_PUSHDATA4 '
+			return res + ' (WIP) ...'
 		elif(a + b == '4f') : res += ' OP_1NEGATE '
 		elif(a + b == '51') : res += ' OP_TRUE '
 		# TODO 52-60
@@ -204,7 +297,7 @@ def printHexScript(script):
 		elif(a + b == '68') : res += ' OP_ENDIF '
 		elif(a + b == '69') : res += ' OP_VERIFY '
 		elif(a + b == '6a') : res += ' OP_RETURN '
-		#stack
+		# stack
 		elif(a + b == '6b') : res += ' OP_TOTALSTACK '
 		elif(a + b == '6c') : res += ' OP_FROMALTSTACK '
 		elif(a + b == '73') : res += ' OP_IFDUP '
@@ -224,20 +317,20 @@ def printHexScript(script):
 		elif(a + b == '70') : res += ' OP_2OVER '
 		elif(a + b == '71') : res += ' OP_2ROT '
 		elif(a + b == '72') : res += ' OP_2SWAP '
-		#splice
-		elif(a + b == '7e') : res += ' OP_CAT* '# * = disable
+		# splice
+		elif(a + b == '7e') : res += ' OP_CAT* ' # * = disabled opcode
 		elif(a + b == '7f') : res += ' OP_SUBSTR* '
 		elif(a + b == '80') : res += ' OP_LEFT* '
 		elif(a + b == '81') : res += ' OP_RIGHT* '
 		elif(a + b == '82') : res += ' OP_SIZE '
-		#bitwise logic
+		# bitwise logic
 		elif(a + b == '83') : res += ' OP_INVERT* '
 		elif(a + b == '84') : res += ' OP_AND* '
 		elif(a + b == '85') : res += ' OP_OR* '
 		elif(a + b == '86') : res += ' OP_XOR* '
 		elif(a + b == '87') : res += ' OP_EQUAL '
 		elif(a + b == '88') : res += ' OP_EQUALVERIFY '
-		#arithmetic
+		# arithmetic
 		elif(a + b == '8b') : res += ' OP_1ADD '
 		elif(a + b == '8c') : res += ' OP_1SUB '
 		elif(a + b == '8d') : res += ' OP_2MUL* '
@@ -265,7 +358,7 @@ def printHexScript(script):
 		elif(a + b == 'a3') : res += ' OP_MIN '
 		elif(a + b == 'a4') : res += ' OP_MAX '
 		elif(a + b == 'a5') : res += ' OP_WITHIN '
-		#crypto
+		# crypto
 		elif(a + b == 'a6') : res += ' OP_RIPEMD160 '
 		elif(a + b == 'a7') : res += ' OP_SHA1 '
 		elif(a + b == 'a8') : res += ' OP_SHA256 '
@@ -276,14 +369,14 @@ def printHexScript(script):
 		elif(a + b == 'ad') : res += ' OP_CHECKSIGVERIFY '
 		elif(a + b == 'ae') : res += ' OP_CHECKMULTISIG '
 		elif(a + b == 'af') : res += ' OP_CHECKMULTISIGVERIFY '
-		#locktime
+		# locktime
 		elif(a + b == 'b1') : res += ' OP_CHECKLOCKTIMEVERIFY '
 		elif(a + b == 'b2') : res += ' OP_CHECKSEQUENCEVERIFY '
-		#pseudo words
+		# pseudo words
 		elif(a + b == 'fd') : res += ' OP_PUBKEYHASH '
 		elif(a + b == 'fe') : res += ' OP_PUBKEY '
 		elif(a + b == 'ff') : res += ' OP_INVALIDOPCODE '
-		#reserved words
+		# reserved words
 		elif(a + b == '50') : res += ' OP_RESERVED '
 		elif(a + b == '62') : res += ' OP_VER '
 		elif(a + b == '65') : res += ' OP_VERIF '

@@ -1,5 +1,0 @@
-TODO : 
-	- remove french text
-	- rewrite CLI help
-
-pySpark

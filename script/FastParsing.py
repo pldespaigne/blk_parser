@@ -30,21 +30,25 @@ def jsonDefault(obj):
 	if isinstance(obj, set): return list(obj)
 	return obj.__dict__
 
+# more info on data structure here :
+# Block 		: <https://en.bitcoin.it/wiki/Block>
+# Block Header 	: <https://en.bitcoin.it/wiki/Block_hashing_algorithm>
+# Transaction	: <https://en.bitcoin.it/wiki/Transaction>
+
 def parse(path, block_index, tx_index):
 
 	print('Parsing tx to JSON file', path, '. . .')
-	time_start = time.time()
+	time_start = time.time() # get starting time
 
-	with open(path, 'w') as json_file:
+	with open(path, 'w') as json_file: # open the output (json) file in writing mode
 
-		with open(block_index.path, 'rb') as block_file:
+		with open(block_index.path, 'rb') as block_file: # open the input (.dat) file in reading binary mode
 
 			tx_ins = []
 			tx_outs = []
 
 			in_prev_hash = []
 			in_prev_index = []
-			# in_value = []
 
 			out_address = []
 			out_index = []
@@ -52,14 +56,13 @@ def parse(path, block_index, tx_index):
 
 			current_block = -1
 
-			for i in range(0, len(tx_index.byte_index)):
+			for i in range(0, len(tx_index.byte_index)): # iterate over all the tx in the tx index
 				# clearing
 				tx_ins.clear()
 				tx_outs.clear()
 
 				in_prev_hash.clear()
 				in_prev_index.clear()
-				# in_value.clear()
 
 				out_address.clear()
 				out_value.clear()
@@ -78,25 +81,32 @@ def parse(path, block_index, tx_index):
 				h_bytes = h_sha256.digest()
 				h_sha256 = hashlib.sha256()
 				h_sha256.update(h_bytes)
-				tx_id = h_sha256.hexdigest()
-				tx_id = Util.formatHashString(tx_id, True, True)
+				tx_id_hash = h_sha256.hexdigest()
+				tx_id = Util.formatHashString(tx_id_hash, True, True)
+				if len(tx_id) != 66: print(tx_id_hash, tx_id)
 
 				block_file.seek(tx_index.byte_index[i] + 4) # parsing number of tx inputs, tx version : 4
 				byte_in_count = block_file.read(1) # reading the INPUT COUNT
-				#check if varInt is on 1, 2, 4, or 8 bytes
-				if(byte_in_count[0] == 253):#varInt is on 2 bytes AFTER the prefix
+
+				# check if varInt is on 1, 2, 4, or 8 bytes
+				if(byte_in_count[0] == 253): # varInt is on 2 bytes AFTER the prefix
 					byte_in_count = block_file.read(2)
-				elif(byte_in_count[0] == 254):#varInt is on 4 bytes AFTER the prefix
+
+				elif(byte_in_count[0] == 254): # varInt is on 4 bytes AFTER the prefix
 					byte_in_count = block_file.read(4)
-				elif(byte_in_count[0] == 255):#varInt is on 8 bytes AFTER the prefix
+
+				elif(byte_in_count[0] == 255): # varInt is on 8 bytes AFTER the prefix
 					byte_in_count = block_file.read(8)
+
 				# else: # varInt was on 1 bytes, nothing to do
+
 				in_count = int.from_bytes(byte_in_count, byteorder='little')
 				ins = 0
 				while ins < in_count:
 					byte_hash = block_file.read(32) # previous tx hash : 32
-					prev_hash = hex(int.from_bytes(byte_hash, byteorder='big'))
-					prev_hash = Util.formatHashString(prev_hash[2:], True, True)
+					first_hash = hex(int.from_bytes(byte_hash, byteorder='big'))
+					prev_hash = Util.formatPrevHashString(first_hash[2:], True, True)
+					if(len(prev_hash) != 66 and len(prev_hash) != 2): print(byte_hash, first_hash, prev_hash)
 					in_prev_hash.append(prev_hash)
 
 					byte_prev_index = block_file.read(4) # previous tx index : 4
@@ -104,13 +114,17 @@ def parse(path, block_index, tx_index):
 					in_prev_index.append(prev_index)
 
 					byte_script_len = block_file.read(1) # reading the INPUT COUNT
-					#check if varInt is on 1, 2, 4, or 8 bytes
-					if(byte_script_len[0] == 253):#varInt is on 2 bytes AFTER the prefix
+
+					# check if varInt is on 1, 2, 4, or 8 bytes
+					if(byte_script_len[0] == 253): # varInt is on 2 bytes AFTER the prefix
 						byte_script_len = block_file.read(2)
-					elif(byte_script_len[0] == 254):#varInt is on 4 bytes AFTER the prefix
+
+					elif(byte_script_len[0] == 254): # varInt is on 4 bytes AFTER the prefix
 						byte_script_len = block_file.read(4)
-					elif(byte_script_len[0] == 255):#varInt is on 8 bytes AFTER the prefix
+
+					elif(byte_script_len[0] == 255): # varInt is on 8 bytes AFTER the prefix
 						byte_script_len = block_file.read(8)
+
 					# else: # varInt was on 1 bytes, nothing to do
 
 					script_len = int.from_bytes(byte_script_len, byteorder='little')
@@ -119,14 +133,19 @@ def parse(path, block_index, tx_index):
 					ins += 1
 
 				byte_out_count = block_file.read(1) # reading the OUTPUT COUNT
-				#check if varInt is on 1, 2, 4, or 8 bytes
-				if(byte_out_count[0] == 253):#varInt is on 2 bytes AFTER the prefix
+
+				# check if varInt is on 1, 2, 4, or 8 bytes
+				if(byte_out_count[0] == 253): # varInt is on 2 bytes AFTER the prefix
 					byte_out_count = block_file.read(2)
-				elif(byte_out_count[0] == 254):#varInt is on 4 bytes AFTER the prefix
+
+				elif(byte_out_count[0] == 254): # varInt is on 4 bytes AFTER the prefix
 					byte_out_count = block_file.read(4)
-				elif(byte_out_count[0] == 255):#varInt is on 8 bytes AFTER the prefix
+
+				elif(byte_out_count[0] == 255): # varInt is on 8 bytes AFTER the prefix
 					byte_out_count = block_file.read(8)
+
 				# else: # varInt was on 1 bytes, nothing to do
+
 				out_count = int.from_bytes(byte_out_count, byteorder='little')
 				outs = 0
 				while outs < out_count:
@@ -137,14 +156,19 @@ def parse(path, block_index, tx_index):
 					out_index.append(outs)
 
 					byte_script_len = block_file.read(1) # reading the INPUT COUNT
-					#check if varInt is on 1, 2, 4, or 8 bytes
-					if(byte_script_len[0] == 253):#varInt is on 2 bytes AFTER the prefix
+					
+					# check if varInt is on 1, 2, 4, or 8 bytes
+					if(byte_script_len[0] == 253): # varInt is on 2 bytes AFTER the prefix
 						byte_script_len = block_file.read(2)
-					elif(byte_script_len[0] == 254):#varInt is on 4 bytes AFTER the prefix
+
+					elif(byte_script_len[0] == 254): # varInt is on 4 bytes AFTER the prefix
 						byte_script_len = block_file.read(4)
-					elif(byte_script_len[0] == 255):#varInt is on 8 bytes AFTER the prefix
+
+					elif(byte_script_len[0] == 255): # varInt is on 8 bytes AFTER the prefix
 						byte_script_len = block_file.read(8)
+
 					# else: # varInt was on 1 bytes, nothing to do
+
 					script_len = int.from_bytes(byte_script_len, byteorder='little')
 					byte_script = block_file.read(script_len) # script : script_len
 					script = Util.intToHexString(int.from_bytes(byte_script, byteorder='big'), False, False)
@@ -170,6 +194,7 @@ def parse(path, block_index, tx_index):
 					elif len(in_prev_hash) == 1:
 						tx_ins.append(JsonTx.JsonTxIn('NO_ADDRESS', in_prev_hash[ins], in_prev_index[ins], tx_total_value)) # if there is only 1 input its value is the total value of the tx
 					else:
+						if len(in_prev_hash[ins]) != 66: print(in_prev_hash[ins], len(in_prev_hash[ins]))
 						tx_ins.append(JsonTx.JsonTxIn('NO_ADDRESS', in_prev_hash[ins], in_prev_index[ins], 'NO_VALUE'))
 				for outs in range(0, len(out_value)):
 					tx_outs.append(JsonTx.JsonTxOut(out_address[outs], out_index[outs], out_value[outs]))

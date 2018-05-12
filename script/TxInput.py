@@ -23,6 +23,11 @@ import hashlib
 
 import Util
 
+# more info on data structure here :
+# Block 		: <https://en.bitcoin.it/wiki/Block>
+# Block Header 	: <https://en.bitcoin.it/wiki/Block_hashing_algorithm>
+# Transaction	: <https://en.bitcoin.it/wiki/Transaction>
+
 class TxInput:
 	def __init__(self, bytes_data, in_count, _isCoinbase):
 		self.isCoinbase = _isCoinbase
@@ -39,24 +44,27 @@ class TxInput:
 			bytes_rest = bytes_rest[4:]
 			self.size_bytes += 4
 
-			bytes_script_length = bytes_rest[:1]#get varInt prefix
+			bytes_script_length = bytes_rest[:1] # get varInt prefix
 			bytes_rest = bytes_rest[1:]
 			self.size_bytes += 1
 
-			#check if varInt is on 1, 2, 4, or 8 bytes
-			if(bytes_script_length[0] == 253):#varInt is on 2 bytes AFTER the prefix
+			# check if varInt is on 1, 2, 4, or 8 bytes
+			if(bytes_script_length[0] == 253): # varInt is on 2 bytes AFTER the prefix
 				bytes_script_length = bytes_rest[:2]
 				bytes_rest = bytes_rest[2:]
 				self.size_bytes += 2
-			elif(bytes_script_length[0] == 254):#varInt is on 4 bytes AFTER the prefix
+
+			elif(bytes_script_length[0] == 254): # varInt is on 4 bytes AFTER the prefix
 				bytes_script_length = bytes_rest[:4]
 				bytes_rest = bytes_rest[4:]
 				self.size_bytes += 4
-			elif(bytes_script_length[0] == 255):#varInt is on 8 bytes AFTER the prefix
+
+			elif(bytes_script_length[0] == 255): # varInt is on 8 bytes AFTER the prefix
 				bytes_script_length = bytes_rest[:8]
 				bytes_rest = bytes_rest[8:]
 				self.size_bytes += 8
-			#else varInt was on 1 bytes, nothing to do
+				
+			# else varInt was on 1 bytes, nothing to do
 
 			script_length = int.from_bytes(bytes_script_length, byteorder='little')
 
@@ -69,20 +77,13 @@ class TxInput:
 			self.size_bytes += 4
 
 			tx_hash = hex(int.from_bytes(bytes_tx_hash, byteorder='big'))
-			# tx_hash = hex(bytes_tx_hash)
-			# h_sha256 = hashlib.sha256()
-			# h_sha256.update(bytes_tx_hash)
-			# h_bytes = h_sha256.digest()
-			# h_sha256 = hashlib.sha256()
-			# h_sha256.update(h_bytes)
-			# tx_hash = h_sha256.hexdigest()
+
 			tx_hash = Util.formatHashString(tx_hash[2:], True, True)
 
 			out_index = int.from_bytes(bytes_out_index, byteorder='little')
+			
 			#script_length
 
-			# script = int.from_bytes(bytes_script, byteorder='big')
-			# script = int.from_bytes(bytes_script, byteorder='little')
 			script = Util.intToHexString(int.from_bytes(bytes_script, byteorder='big'), False, False)
 
 			sequence = int.from_bytes(bytes_sequence, byteorder='little')
