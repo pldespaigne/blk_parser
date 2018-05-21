@@ -1,4 +1,5 @@
 cdc/
+cdc/img/
 data/
 img/
 metastore_db/
@@ -8,7 +9,7 @@ result/
 
 script/__pycache__/
 script/metastore_db/
-script/spark-warehouse
+script/spark-warehouse/
 
 *.pyc
 *.url

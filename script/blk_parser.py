@@ -195,7 +195,7 @@ else:
 				# if the indexes doesn't exist create them
 				if block_index == None or block_index.path != input_file: block_index = BlockIndex(input_file)
 
-				i = int(command[2])
+				i = int(command[1])
 				block = block_index.parseBlock(i)
 				block.print()
 
@@ -205,7 +205,7 @@ else:
 				if block_index == None or block_index.path != input_file: block_index = BlockIndex(input_file)
 				if tx_index == None or tx_index.path != input_file: tx_index = TxIndex(block_index)
 				
-				i = int(command[2])
+				i = int(command[1])
 				print('Block :', tx_index.block_num[i])
 				tx = tx_index.parseTx(i)
 				tx.print()
