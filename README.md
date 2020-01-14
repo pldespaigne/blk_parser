@@ -1,4 +1,4 @@
-> ⚠️ This repo is not mainted anymore
+> ⚠️ This repo is not maintained anymore
 
 ![Header Image](https://preview.ibb.co/cxO2Qd/header.png)
 
